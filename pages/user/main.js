@@ -49,6 +49,10 @@ import Settings from '../../components/toolstring/Settings';
 import { TbAdjustmentsHorizontal } from 'react-icons/tb';
 import { BsQuestionCircleFill } from 'react-icons/bs';
 import { Offline, Online, Detector } from 'react-detect-offline';
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
+
 
 import { nanoid } from 'nanoid';
 
@@ -94,7 +98,7 @@ export default function main() {
   // }
 
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       <Settings />
       <AddTool />
       <div className='relative'>
@@ -445,6 +449,6 @@ export default function main() {
           </div>
         </Tabs>
       </div>
-    </>
+    </DndProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { useContext, forwardRef, useEffect, useState } from 'react';
+import { useContext, forwardRef, useEffect, useState, useCallback } from 'react';
 import { db, storage } from '../../firebase';
 import { doc, setDoc, getDoc, updateDoc, collection } from 'firebase/firestore';
 import {
@@ -25,6 +25,7 @@ import { ToolstringContext } from '../../context/ToolstringContext';
 import { AuthContext } from '../../context/AuthContext';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { nanoid } from 'nanoid';
+import omitBy from 'lodash/omitBy'
 import {
   useForm,
   useFieldArray,
@@ -39,9 +40,10 @@ import {
   EditIcon,
   ChevronDownIcon,
 } from '@chakra-ui/icons';
-import { motion } from 'framer-motion';
+import { useDrop } from 'react-dnd'
 
 const Diagram = forwardRef((props, ref) => {
+
   const {
     lengthUnits,
     diameterUnits,
@@ -68,18 +70,7 @@ const Diagram = forwardRef((props, ref) => {
   const { handleSubmit, register, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
-        tools: [
-          {
-            _id: nanoid(),
-            imageURL: '',
-            description: '',
-            connection: '',
-            weight: '',
-            fishneck: '',
-            maxOd: '',
-            length: '',
-          },
-        ],
+        tools: [],
       },
     });
 
@@ -87,6 +78,23 @@ const Diagram = forwardRef((props, ref) => {
     control,
     name: `tools`,
   });
+
+  // Dnd
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: 'tool',
+    drop: (item) => {
+      append(item)
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }))
+
+
+  const isActive = isOver && canDrop
+
+  // Dnd
 
   const images = ['/tools/wireline-stem.svg'];
 
@@ -99,6 +107,7 @@ const Diagram = forwardRef((props, ref) => {
       move(source.index, destination.index);
     }
   };
+
 
   useEffect(() => {
     const subscription = watch((data) => {
@@ -173,6 +182,7 @@ const Diagram = forwardRef((props, ref) => {
     }
   };
 
+
   return (
     <form onSubmit={handleSubmit(handleSaveToolstring)} autoComplete='off'>
       <Button size='xs' type='submit'>
@@ -207,7 +217,10 @@ const Diagram = forwardRef((props, ref) => {
         />
       </Flex>
 
-      <Flex w='full' mt={3} flexDir='column' borderWidth='1px'>
+      <Flex
+        ref={drop}
+        style={{ opacity: isActive ? 0.6 : 1, background: canDrop ? '#ffffff33' : undefined }}
+        w='full' mt={3} flexDir='column' borderWidth='1px'>
         <Flex w='fill' h='32px' justify='center' borderBottomWidth='1px'>
           <Input
             w='300px'
@@ -248,7 +261,10 @@ const Diagram = forwardRef((props, ref) => {
             ))}
           </Grid>
         </Flex>
-        <div className='overflow-y-auto scrollbar-hide'>
+        {!fields.length && <div style={{ padding: '4rem' }}>
+          Drag a item from the left panel or add a empty row.
+        </div>}
+        {!!fields.length && <div className='overflow-y-auto scrollbar-hide'>
           {fields.map((item, index) => (
             <Flex
               w='full'
@@ -436,7 +452,16 @@ const Diagram = forwardRef((props, ref) => {
                     size='xs'
                     aria-label='Duplicate item'
                     icon={<CopyIcon />}
-                    onClick={() => append({})}
+                    onClick={() => {
+                      const myValues = getValues(`tools.${index}`)
+                      // clean 
+                      // Todo: Handle NaN case.
+                      const clean = Object.keys(myValues).reduce((acc, k) => ({ ...acc, [k]: !!myValues[k] ? myValues[k] : undefined }), {})
+                      insert(index + 1, {
+                        ...clean,
+                        _id: nanoid(),
+                      })
+                    }}
                   />
                 </Flex>
               )}
@@ -452,7 +477,7 @@ const Diagram = forwardRef((props, ref) => {
               )}
             </Flex>
           ))}
-        </div>
+        </div>}
         <Flex w='full' h='24px' borderTopWidth='1px' justify='space-between'>
           <Center ml={2}>
             <Text fontSize='xs' mr={2}>

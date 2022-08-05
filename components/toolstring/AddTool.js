@@ -107,12 +107,12 @@ export default function AddTool() {
 
   // console.log('attachments', attachments);
 
-  const { handleSubmit, register,  reset,  setValue, getValues } = useForm();
+  const { handleSubmit, register, reset, setValue, getValues } = useForm();
 
   //upload attachment funcs
 
   const handleSelectFile = (e) => {
-    const [idNumber, description] =  getValues(['idNumber', 'description'])
+    const [idNumber, description] = getValues(['idNumber', 'description'])
     if (!idNumber || !description) {
       toast({
         title: 'Please enter ID number and description',
@@ -152,7 +152,7 @@ export default function AddTool() {
         );
         setUploading(true);
       },
-      (error) => {},
+      (error) => { },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           const newAttachment = {
@@ -177,7 +177,7 @@ export default function AddTool() {
   //upload attachment funcs
 
   const handleSelectImage = (e) => {
-    const [idNumber, description] =  getValues(['idNumber', 'description'])
+    const [idNumber, description] = getValues(['idNumber', 'description'])
     if (!idNumber || !description) {
       toast({
         title: 'Please enter ID number and description',
@@ -218,7 +218,7 @@ export default function AddTool() {
         );
         setUploadingImage(true);
       },
-      (error) => {},
+      (error) => { },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           // const newAttachment = {
@@ -269,9 +269,9 @@ export default function AddTool() {
 
 
   const handleSave = async (data) => {
-    console.log(`handleSave`, {data})
-    const [idNumber] =  getValues(['idNumber'])
+    const idNumber = getValues(['idNumber'])
     const docId = getDocId(idNumber)
+    console.log({ idNumber, docId })
     const docRef = doc(db, 'tools', docId);
     const docSnap = await getDoc(docRef);
     const toolData = {
@@ -309,29 +309,32 @@ export default function AddTool() {
   };
 
   useEffect(() => {
-    ((async() => {
+    ((async () => {
+      // reset the form and state.
+      reset()
+      setEditMode(false)
       // get the initial data and load the state.
-    if (typeof addTool === 'string') {
-      // we have a id and we are in edit mode.
-      const docRef = doc(db, 'tools', addTool);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data()
-        console.log('AddTodo: useEffect: setting initial data', { data })
-        // Setting the data to the form state.
-        setValue('idNumber', data.idNumber)
-        setValue('description', data.description)
-        setEditMode(true)
-        // setAttachments(data.attachments)
-        // setImage()
+      if (typeof addTool === 'string') {
+        // we have a id and we are in edit mode.
+        const docRef = doc(db, 'tools', addTool);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data()
+          console.log('AddTodo: useEffect: setting initial data', { data })
+          // Setting the data to the form state.
+          setValue('idNumber', data.idNumber)
+          setValue('description', data.description)
+          setEditMode(true)
+          // setAttachments(data.attachments)
+          // setImage()
 
-      } else {
-        // show error and close the modal.
-        alert("Invalid id given")
-        setAddTool(false)
+        } else {
+          // show error and close the modal.
+          alert("Invalid id given")
+          setAddTool(false)
+        }
+
       }
-     
-    }
     })())
 
   }, [addTool])
@@ -432,10 +435,10 @@ export default function AddTool() {
                   <Input
                     size='xs'
                     fontSize='xs'
+                    disabled={editMode}
                     borderRadius='6px'
                     {...register('idNumber', {
                       required: true,
-                      disabled: editMode,
                     })}
                   />
                 </FormControl>
@@ -784,7 +787,7 @@ export default function AddTool() {
                       className='hidden'
                       type='file'
                       onChange={handleUploadFile}
-                      // accept='image/.png,.jpg,.jpeg,.svg'
+                    // accept='image/.png,.jpg,.jpeg,.svg'
                     />
                   </Flex>
                 </Flex>
