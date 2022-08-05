@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useMemo, useContext } from 'react';
+import { createContext, useState, useEffect, useMemo, useContext, useCallback } from 'react';
 import { toolsData } from '../data/toolsData';
 import { auth, db, storage } from '../firebase';
 import { AuthContext } from '../context/AuthContext';
@@ -136,6 +136,10 @@ export const ToolstringProvider = ({ children }) => {
     getTools();
   }, [currentUser]);
 
+  const openToolForm = useCallback((id) => {
+    setAddTool(id)
+  }, [])
+
   return (
     <ToolstringContext.Provider
       value={{
@@ -180,6 +184,7 @@ export const ToolstringProvider = ({ children }) => {
         setDiameterUnits,
         weightUnits,
         setWeightUnits,
+        openToolForm
       }}
     >
       {children}

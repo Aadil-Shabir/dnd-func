@@ -19,7 +19,7 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 import { FiBookmark } from 'react-icons/fi';
 
 export default function ToolsList() {
-  const { filteredTools } = useContext(ToolstringContext);
+  const { filteredTools, openToolForm } = useContext(ToolstringContext);
   const toast = useToast();
 
   const handleDeleteTool = async (_id) => {
@@ -97,7 +97,9 @@ export default function ToolsList() {
                   <MenuItem
                     icon={<EditIcon />}
                     onClick={() =>
-                      alert('open side drawer with tool data form to EDIT')
+                      {
+                         openToolForm(item._id)
+                      }
                     }
                   >
                     Edit

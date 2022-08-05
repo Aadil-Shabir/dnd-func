@@ -1,6 +1,6 @@
-import { useContext, useRef, useState, useEffect } from 'react';
+import { useContext, useRef, useState, useEffect, useCallback } from 'react';
 import { db, storage } from '../../firebase';
-import { doc, setDoc, getDoc, updateDoc, collection } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, collection, query } from 'firebase/firestore';
 import {
   ref,
   uploadBytesResumable,
@@ -79,8 +79,6 @@ export default function AddTool() {
   const {
     addTool,
     setAddTool,
-    toolData,
-    setToolData,
     showSelectImage,
     setShowSelectImage,
     searchDefaultTools,
@@ -100,26 +98,21 @@ export default function AddTool() {
   const filePicker = useRef();
   const [tag, setTag] = useState(null);
   const toast = useToast();
-  const [idNumber, setIdNumber] = useState(null);
-  const [description, setDescription] = useState(null);
   const [color, setColor] = useState('#3182CE');
   const [uploading, setUploading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [fileName, setFileName] = useState(null);
   const [attachments, setAttachments] = useState([]);
+  const [editMode, setEditMode] = useState(false)
 
   // console.log('attachments', attachments);
 
-  const { handleSubmit, register, errors, reset, control } = useForm({
-    defaultValues: {
-      idNumber: toolData?.idNumber,
-      description: toolData?.description,
-    },
-  });
+  const { handleSubmit, register,  reset,  setValue, getValues } = useForm();
 
   //upload attachment funcs
 
   const handleSelectFile = (e) => {
+    const [idNumber, description] =  getValues(['idNumber', 'description'])
     if (!idNumber || !description) {
       toast({
         title: 'Please enter ID number and description',
@@ -184,6 +177,7 @@ export default function AddTool() {
   //upload attachment funcs
 
   const handleSelectImage = (e) => {
+    const [idNumber, description] =  getValues(['idNumber', 'description'])
     if (!idNumber || !description) {
       toast({
         title: 'Please enter ID number and description',
@@ -270,10 +264,15 @@ export default function AddTool() {
     }
   };
 
-  const docId = `${idNumber}@${currentUser?.uid}`;
-  const docRef = doc(db, 'tools', docId);
+  const getDocId = useCallback((id) => `${id}@${currentUser?.uid}`, [currentUser?.uid])
+
+
 
   const handleSave = async (data) => {
+    console.log(`handleSave`, {data})
+    const [idNumber] =  getValues(['idNumber'])
+    const docId = getDocId(idNumber)
+    const docRef = doc(db, 'tools', docId);
     const docSnap = await getDoc(docRef);
     const toolData = {
       _id: docId,
@@ -308,6 +307,34 @@ export default function AddTool() {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    ((async() => {
+      // get the initial data and load the state.
+    if (typeof addTool === 'string') {
+      // we have a id and we are in edit mode.
+      const docRef = doc(db, 'tools', addTool);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data()
+        console.log('AddTodo: useEffect: setting initial data', { data })
+        // Setting the data to the form state.
+        setValue('idNumber', data.idNumber)
+        setValue('description', data.description)
+        setEditMode(true)
+        // setAttachments(data.attachments)
+        // setImage()
+
+      } else {
+        // show error and close the modal.
+        alert("Invalid id given")
+        setAddTool(false)
+      }
+     
+    }
+    })())
+
+  }, [addTool])
 
   return (
     <>
@@ -408,7 +435,7 @@ export default function AddTool() {
                     borderRadius='6px'
                     {...register('idNumber', {
                       required: true,
-                      onChange: (e) => setIdNumber(e.target.value),
+                      disabled: editMode,
                     })}
                   />
                 </FormControl>
@@ -422,7 +449,6 @@ export default function AddTool() {
                     resize='none'
                     {...register('description', {
                       required: true,
-                      onChange: (e) => setDescription(e.target.value),
                     })}
                     mb={2}
                   />
@@ -794,20 +820,20 @@ export default function AddTool() {
 
             <DrawerFooter>
               <Flex w='full' justify='space-between'>
-                <Button
+                {!editMode && <Button
                   variant='outline'
                   size='sm'
                   onClick={() => {
                     setSelectedImage(null);
                     setTag(null);
-                    reset();
+                    reset()
                   }}
                   w='70px'
                 >
                   Clear
-                </Button>
+                </Button>}
                 <Button colorScheme='blue' size='sm' w='70px' type='submit'>
-                  Save
+                  {editMode ? "Update" : "Save"}
                 </Button>
               </Flex>
             </DrawerFooter>
