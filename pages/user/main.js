@@ -37,6 +37,7 @@ import {
   SmallAddIcon,
 } from '@chakra-ui/icons';
 import Diagram from '../../components/toolstring/Diagram';
+import Diagram2 from '../../components/toolstring/Diagram2';
 import { BsPrinterFill } from 'react-icons/bs';
 import { FaFileCsv, FaCog } from 'react-icons/fa';
 import { AuthContext } from '../../context/AuthContext';
@@ -388,6 +389,7 @@ export default function main() {
                     <Flex w='654px' h='100vh' px={2}>
                       <div className='overflow-y-auto scrollbar-hide'>
                         {showDiagram && <Diagram />}
+                        {showDiagram && <Diagram2 />}
                       </div>
                     </Flex>
 

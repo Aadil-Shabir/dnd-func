@@ -111,20 +111,22 @@ const Diagram = forwardRef((props, ref) => {
 
   useEffect(() => {
     const subscription = watch((data) => {
-      const totalLength = data.tools
-        .map((item) => item.length)
-        .reduce((a, b) => a + b, 0)
-        .toFixed(2);
-      const totalWeight = data.tools
-        .map((item) => item.weight)
-        .reduce((a, b) => a + b, 0)
-        .toFixed(2);
+      console.log(`Diagram`, { data })
 
-      const idArray = data.tools.map((item) => item.maxOd);
-      const maxOd = Math.max(...idArray).toFixed(2);
-      setTotalLength(Number(totalLength));
-      setTotalWeight(Number(totalWeight));
-      setMaxOd(Number(maxOd));
+      // const totalLength = data.tools
+      //   .map((item) => item.length)
+      //   .reduce((a, b) => a + b, 0)
+      //   .toFixed(2);
+      // const totalWeight = data.tools
+      //   .map((item) => item.weight)
+      //   .reduce((a, b) => a + b, 0)
+      //   .toFixed(2);
+
+      // const idArray = data.tools.map((item) => item.maxOd);
+      // const maxOd = Math.max(...idArray).toFixed(2);
+      // setTotalLength(Number(totalLength));
+      // setTotalWeight(Number(totalWeight));
+      // setMaxOd(Number(maxOd));
     });
 
     return () => {
