@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+.resizer {
+  display: inline-block;
+  background: black;
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translateX(50%);
+  z-index: 1;
+  /* ${"" prevents from scrolling while dragging on touch devices} */
+  touch-action:none;
+};
+
+  .isResizing {
+    background: red;
+  }
+
 @media print {
   .printComponent {
     padding: 1.5rem;

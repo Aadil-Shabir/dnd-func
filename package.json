@@ -33,6 +33,7 @@
     "react-select": "^5.4.0",
     "react-spinners": "^0.13.3",
     "react-table": "^7.8.0",
+    "react-table-column-resizer": "^1.0.1",
     "react-to-print": "^2.14.7",
     "tailwind-scrollbar-hide": "^1.1.7"
   },
