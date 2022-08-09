@@ -40,16 +40,15 @@ import {
   EditIcon,
   ChevronDownIcon,
 } from '@chakra-ui/icons';
-import { useDrop } from 'react-dnd'
-import { Table, Thead, Tbody, Tr, Th, Td, chakra } from '@chakra-ui/react'
-import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons'
+import { useDrop } from "react-dnd"
+import { Table, Thead, Tbody, Tr, Th, Td, chakra } from "@chakra-ui/react"
+import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons"
 import {
   useTable,
   useSortBy,
   useResizeColumns,
   useBlockLayout,
 } from "react-table"
-import ColumnResizer from "react-table-column-resizer"
 
 const Diagram = forwardRef((props, ref) => {
   const {
@@ -196,7 +195,7 @@ const Diagram = forwardRef((props, ref) => {
         const index = row.index
         return (
           <div>
-            <IconButton
+            {/* <IconButton
               size="xs"
               aria-label="Duplicate item"
               icon={<CopyIcon />}
@@ -216,21 +215,21 @@ const Diagram = forwardRef((props, ref) => {
                   _id: nanoid(),
                 })
               }}
-            />
-            <Image src={value} />
-            <IconButton
+            /> */}
+            <Image boxSize="60px" src={value} />
+            {/* <IconButton
               size="xs"
               aria-label="Remove item"
               icon={<DeleteIcon />}
               onClick={() => remove(index)}
-            />
+            /> */}
           </div>
         )
       },
       description: (p) => {
         const { value, row } = p
         const index = row.index
-        console.log("Description", value)
+
         return (
           <Input
             fontSize="xs"
@@ -351,11 +350,19 @@ const Diagram = forwardRef((props, ref) => {
   const defaultColumn = useMemo(
     () => ({
       minWidth: 30,
-      width: 150,
+      width: 92,
       maxWidth: 400,
     }),
     []
   )
+
+  const [numIncr, setNumIncr] = useState(0)
+
+  useEffect(() => {
+    setNumIncr(Math.floor(Math.random() * 10))
+  }, [fields])
+
+  console.log(numIncr)
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable(
@@ -423,89 +430,129 @@ const Diagram = forwardRef((props, ref) => {
             })}
           />
         </Flex>
-
-        <Table {...getTableProps()}>
-          <Thead w="full" h="24px" borderBottomWidth="1px">
-            {headerGroups.map((headerGroup) => (
-              <Tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column, index) => (
-                  <Th
-                    {...column.getHeaderProps()}
-                    isNumeric={column.isNumeric}
-                    w="100%"
-                    h="full"
-                    key={index}
-                    justify="center"
-                    align="center"
-                    borderRightWidth={
-                      index === columns?.length - 1 ? null : "1px"
-                    }
-                  >
-                    <Box mt="1px">
-                      <Text fontSize="xs">
-                        {column.render("Header")}
-                        <div
-                          {...column.getResizerProps()}
-                          className={`resizer ${
-                            column.isResizing ? "isResizing" : ""
-                          }`}
-                        />
-                      </Text>
-                    </Box>
-
-                    <chakra.span pl="4">
-                      {column.isSorted ? (
-                        column.isSortedDesc ? (
-                          <TriangleDownIcon aria-label="sorted descending" />
-                        ) : (
-                          <TriangleUpIcon aria-label="sorted ascending" />
-                        )
-                      ) : null}
-                    </chakra.span>
-                  </Th>
-                ))}
-              </Tr>
-            ))}
-          </Thead>
-          <Tbody
-            {...getTableBodyProps()}
-            className="overflow-y-auto scrollbar-hide"
-          >
-            {rows.map((row, index) => {
-              prepareRow(row)
-              return (
-                <Tr
-                  {...row.getRowProps()}
-                  w="full"
-                  h="80px"
-                  key={index}
-                  pos="relative"
-                  onMouseEnter={() => setShowIcons(index)}
-                  onMouseLeave={() => setShowIcons(null)}
-                >
-                  {row.cells.map((cell) => (
-                    <Td
-                      {...cell.getCellProps()}
-                      isNumeric={cell.column.isNumeric}
+        <DragDropContext
+          onDragEnd={(param) => {
+            const srcI = param.source.index
+            const desI = param.destination.index
+            console.log(srcI, desI, rows)
+            rows.splice(desI, 0, rows.splice(srcI, 1)[0])
+          }}
+        >
+          <Table {...getTableProps()}>
+            <Thead w="full" h="12px" borderBottomWidth="1px">
+              {headerGroups.map((headerGroup) => (
+                <Tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column, index) => (
+                    <Th
+                      {...column.getHeaderProps()}
+                      isNumeric={column.isNumeric}
                       w="100%"
-                      h="80px"
-                      justify="center"
-                      align="center"
-                      borderRightWidth={grid === "vertical" ? "1px" : null}
+                      h="full"
+                      style={{
+                        padding: "0",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      key={index}
+                      borderRightWidth={
+                        index === columns?.length - 1 ? null : "1px"
+                      }
                     >
-                      <Center
-                        w="full"
-                        borderRightWidth={grid === "vertical" ? "1px" : null}
-                      >
-                        <Text fontSize="xs">{cell.render("Cell")}</Text>
-                      </Center>
-                    </Td>
+                      <Box mt="1px">
+                        <Text
+                          style={{ fontSize: "10px", fontWeight: "lighter" }}
+                        >
+                          {column.Header}
+
+                          <div
+                            {...column.getResizerProps()}
+                            className={`resizer ${
+                              column.isResizing ? "isResizing" : ""
+                            }`}
+                          />
+                        </Text>
+                      </Box>
+
+                      {/* <chakra.span pl="4">
+                        {column.isSorted ? (
+                          column.isSortedDesc ? (
+                            <TriangleDownIcon aria-label="sorted descending" />
+                          ) : (
+                            <TriangleUpIcon aria-label="sorted ascending" />
+                          )
+                        ) : null}
+                      </chakra.span> */}
+                    </Th>
                   ))}
                 </Tr>
-              )
-            })}
-          </Tbody>
-        </Table>
+              ))}
+            </Thead>
+            {!fields.length && (
+              <div style={{ padding: "4rem" }}>
+                Drag a item from the left panel or add a empty row.
+              </div>
+            )}
+            <Droppable droppableId={`droppable-${numIncr}`} type="tools">
+              {(provided) => (
+                <Tbody
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  {...getTableBodyProps()}
+                  className="overflow-y-auto scrollbar-hide"
+                >
+                  {rows.map((row, index) => {
+                    prepareRow(row)
+                    return (
+                      <Draggable draggableId={index.toString()} index={index}>
+                        {(provided) => (
+                          <Tr
+                            {...row.getRowProps()}
+                            {...provided.dragHandleProps}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            w="full"
+                            h="80px"
+                            key={index}
+                            pos="relative"
+                            onMouseEnter={() => setShowIcons(index)}
+                            onMouseLeave={() => setShowIcons(null)}
+                          >
+                            {row.cells.map((cell) => (
+                              <Td
+                                {...cell.getCellProps()}
+                                isNumeric={cell.column.isNumeric}
+                                w="100%"
+                                h="80px"
+                                justify="center"
+                                align="center"
+                                borderRightWidth={
+                                  grid === "vertical" ? "1px" : null
+                                }
+                              >
+                                <Center
+                                  w="full"
+                                  borderRightWidth={
+                                    grid === "vertical" ? "1px" : null
+                                  }
+                                >
+                                  <Text fontSize="xs">
+                                    {cell.render("Cell")}
+                                  </Text>
+                                </Center>
+                              </Td>
+                            ))}
+                          </Tr>
+                        )}
+                      </Draggable>
+                    )
+                  })}
+                  {provided.placeholder}
+                </Tbody>
+              )}
+            </Droppable>
+          </Table>
+        </DragDropContext>
 
         <Flex w="full" h="24px" borderTopWidth="1px" justify="space-between">
           <Center ml={2}>

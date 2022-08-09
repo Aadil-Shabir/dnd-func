@@ -262,7 +262,7 @@ const Diagram = forwardRef((props, ref) => {
                     index === columns?.length - 1 ? null : "1px"
                   }
                 >
-                  <Box mt="2px">
+                  <Box mt="1px">
                     <Text fontSize="xs">
                       <Reorder.Item key={item} value={item}>
                         {item}
