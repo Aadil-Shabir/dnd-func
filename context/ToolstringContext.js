@@ -16,129 +16,150 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { defaultTools } from '../data/defaultTools';
+import { useForm, useFieldArray } from "react-hook-form"
 
-export const ToolstringContext = createContext();
+export const ToolstringContext = createContext()
 
 const initialUnits = {
-  length: 'ft',
-  weight: 'lbs',
-  diameter: 'in',
+  length: "ft",
+  weight: "lbs",
+  diameter: "in",
   // pressure: 'psi',
   // temperature: 'c',
-};
+}
 
 export const ToolstringProvider = ({ children }) => {
-  const { currentUser } = useContext(AuthContext);
-  const [tools, setTools] = useState([]);
-  const [toolstrings, setToolstrings] = useState([]);
-  const [searchTools, setSearchTools] = useState('');
-  const [searchToolstrings, setSearchToolstrings] = useState('');
-  const [units, setUnits] = useState(initialUnits);
-  const [showDiagram, setShowDiagram] = useState(false);
-  const [addTool, setAddTool] = useState(false);
-  const [defaultImage, setDefaultImage] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const { currentUser } = useContext(AuthContext)
+  const [tools, setTools] = useState([])
+  const [toolstrings, setToolstrings] = useState([])
+  const [searchTools, setSearchTools] = useState("")
+  const [searchToolstrings, setSearchToolstrings] = useState("")
+  const [units, setUnits] = useState(initialUnits)
+  const [showDiagram, setShowDiagram] = useState(false)
+  const [addTool, setAddTool] = useState(false)
+  const [defaultImage, setDefaultImage] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
-  const [toolData, setToolData] = useState(null);
-  const [showSelectImage, setShowSelectImage] = useState(false);
-  const [searchDefaultTools, setSearchDefaultTools] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [filterByTag, setFilterByTag] = useState(null);
-  const [grid, setGrid] = useState(null);
-  const [lengthUnits, setLengthUnits] = useState('ft');
-  const [diameterUnits, setDiameterUnits] = useState('in');
-  const [weightUnits, setWeightUnits] = useState('lbs');
+  const [toolData, setToolData] = useState(null)
+  const [showSelectImage, setShowSelectImage] = useState(false)
+  const [searchDefaultTools, setSearchDefaultTools] = useState("")
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [filterByTag, setFilterByTag] = useState(null)
+  const [grid, setGrid] = useState(null)
+  const [lengthUnits, setLengthUnits] = useState("ft")
+  const [diameterUnits, setDiameterUnits] = useState("in")
+  const [weightUnits, setWeightUnits] = useState("lbs")
   const [columns, setColumns] = useState([
-    'Image',
-    'Description',
-    'Connection',
+    "Image",
+    "Description",
+    "Connection",
     `Fishneck`,
     `Weight`,
     `Max OD`,
     `Length`,
-  ]);
+  ])
 
   const filteredToolstrings = useMemo(() => {
     if (!searchToolstrings) {
       return toolstrings.sort((a, b) => {
         if (a.isFrequent !== b.isFrequent) {
-          return a.isFrequent ? -1 : 1;
+          return a.isFrequent ? -1 : 1
         } else {
-          return a.lastModified > b.lastModified ? -1 : 1;
+          return a.lastModified > b.lastModified ? -1 : 1
         }
-      });
+      })
     }
 
     return toolstrings.filter((item) => {
-      return item.name.toLowerCase().includes(searchToolstrings.toLowerCase());
-    });
-  }, [searchToolstrings, toolstrings]);
+      return item.name.toLowerCase().includes(searchToolstrings.toLowerCase())
+    })
+  }, [searchToolstrings, toolstrings])
 
   const filteredDefaultTools = useMemo(() => {
-    if (!searchDefaultTools) return defaultTools;
+    if (!searchDefaultTools) return defaultTools
 
     return defaultTools.filter((item) => {
       return item.description
         .toLowerCase()
-        .includes(searchDefaultTools.toLowerCase());
-    });
-  }, [defaultTools, searchDefaultTools]);
+        .includes(searchDefaultTools.toLowerCase())
+    })
+  }, [defaultTools, searchDefaultTools])
 
   const filteredTools = useMemo(() => {
-    if (!searchTools && !filterByTag) return tools;
+    if (!searchTools && !filterByTag) return tools
 
     return tools.filter((item) => {
       return (
         item.description.toLowerCase().includes(searchTools.toLowerCase()) ||
         item.idNumber.toLowerCase().includes(searchTools.toLowerCase()) ||
         item.tag === filterByTag
-      );
-    });
-  }, [searchTools, tools, filterByTag]);
+      )
+    })
+  }, [searchTools, tools, filterByTag])
 
   const getToolstrings = async () => {
     if (currentUser) {
       const q = query(
-        collection(db, 'toolstrings'),
-        where('uid', '==', currentUser?.uid)
-      );
+        collection(db, "toolstrings"),
+        where("uid", "==", currentUser?.uid)
+      )
       await onSnapshot(q, (querySnapshot) => {
-        const toolstrings = [];
+        const toolstrings = []
         querySnapshot.forEach((doc) => {
-          toolstrings.push({ ...doc.data(), _id: doc.id });
-        });
-        setToolstrings(toolstrings);
-      });
+          toolstrings.push({ ...doc.data(), _id: doc.id })
+        })
+        setToolstrings(toolstrings)
+      })
     }
-  };
+  }
 
   useEffect(() => {
-    getToolstrings();
-  }, [currentUser]);
+    getToolstrings()
+  }, [currentUser])
 
   const getTools = async () => {
     if (currentUser) {
       const q = query(
-        collection(db, 'tools'),
-        where('uid', '==', currentUser?.uid)
-      );
+        collection(db, "tools"),
+        where("uid", "==", currentUser?.uid)
+      )
       await onSnapshot(q, (querySnapshot) => {
-        const tools = [];
+        const tools = []
         querySnapshot.forEach((doc) => {
-          tools.push({ ...doc.data(), _id: doc.id });
-        });
-        setTools(tools);
-      });
+          tools.push({ ...doc.data(), _id: doc.id })
+        })
+        setTools(tools)
+      })
     }
-  };
+  }
 
   useEffect(() => {
-    getTools();
-  }, [currentUser]);
+    getTools()
+  }, [currentUser])
 
   const openToolForm = useCallback((id) => {
     setAddTool(id)
+    console.log("TOools", tools)
   }, [])
+
+  const {
+    handleSubmit,
+    register,
+    control,
+    watch,
+    setValue,
+    getValues,
+    formState: { dirtyFields },
+  } = useForm({
+    defaultValues: {
+      tools: [],
+    },
+  })
+
+  const { fields, append, remove, swap, move, insert } = useFieldArray({
+    control,
+    name: `tools`,
+  })
 
   return (
     <ToolstringContext.Provider
@@ -184,10 +205,23 @@ export const ToolstringProvider = ({ children }) => {
         setDiameterUnits,
         weightUnits,
         setWeightUnits,
-        openToolForm
+        openToolForm,
+        handleSubmit,
+        register,
+        control,
+        watch,
+        setValue,
+        getValues,
+        dirtyFields,
+        fields,
+        append,
+        remove,
+        swap,
+        move,
+        insert,
       }}
     >
       {children}
     </ToolstringContext.Provider>
-  );
-};
+  )
+}

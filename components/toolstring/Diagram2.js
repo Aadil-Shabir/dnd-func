@@ -503,6 +503,7 @@ const Diagram = forwardRef((props, ref) => {
                 >
                   {rows.map((row, index) => {
                     prepareRow(row)
+                    console.log(row, "ROW")
                     return (
                       <Draggable draggableId={index.toString()} index={index}>
                         {(provided) => (

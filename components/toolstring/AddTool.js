@@ -320,14 +320,24 @@ export default function AddTool() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data()
-          console.log('AddTodo: useEffect: setting initial data', { data })
+          console.log("AddTodo: useEffect: setting initial data", { data })
           // Setting the data to the form state.
-          setValue('idNumber', data.idNumber)
-          setValue('description', data.description)
+          setValue("idNumber", data.idNumber)
+          setValue("description", data.description)
+          setValue("fishneck", data.fishneck)
+          setValue("maxOd", data.maxOd)
+          setValue("length", data.length)
+          setValue("weight", data.weight)
+          setValue("tag", data.tag)
+          setSelectedImage(data.imageURL)
+          setValue("units.maxOd", data.units.maxOd)
+          setValue("units.length", data.units.length)
+          setValue("units.weight", data.units.weight)
+          setValue("units.fishneck", data.units.fishneck)
+          setValue("imageURL", data.imageURL)
           setEditMode(true)
           // setAttachments(data.attachments)
           // setImage()
-
         } else {
           // show error and close the modal.
           alert("Invalid id given")
