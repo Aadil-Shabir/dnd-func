@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore';
 import { defaultTools } from '../data/defaultTools';
 import { useForm, useFieldArray } from "react-hook-form"
+import { ExportToCsv } from "export-to-csv"
 
 export const ToolstringContext = createContext()
 
@@ -58,6 +59,8 @@ export const ToolstringProvider = ({ children }) => {
     `Max OD`,
     `Length`,
   ])
+  const [isTag, setIsTag] = useState(false)
+  const [filterTagList, setFilterTagList] = useState([])
 
   const filteredToolstrings = useMemo(() => {
     if (!searchToolstrings) {
@@ -142,6 +145,40 @@ export const ToolstringProvider = ({ children }) => {
     console.log("TOools", tools)
   }, [])
 
+  // Filter By Tag
+  const filterByTagHandler = (tag) => {
+    if (tag === "green" || tag === "red" || tag === "yellow" || !tag) {
+      setIsTag(true)
+    }
+    // if (tag === "none" || !tag) {
+    //   setIsTag(false)
+    // }
+    const myFilteredTools = tools.filter((tool) => tool.tag === tag)
+    setFilterTagList(myFilteredTools)
+  }
+
+  // Export to CSV
+
+  const options = {
+    fieldSeparator: ",",
+    quoteStrings: '"',
+    decimalSeparator: ".",
+    showLabels: true,
+    showTitle: true,
+    title: "My Awesome CSV",
+    useTextFile: false,
+    useBom: true,
+    useKeysAsHeaders: true,
+    // headers: ['Column 1', 'Column 2', etc...] <-- Won't work with useKeysAsHeaders present!
+  }
+
+  const exportToCSV = () => {
+    console.log("Export to CSV")
+    const csvExporter = new ExportToCsv(options)
+    csvExporter.generateCsv(isTag ? filterTagList : tools)
+  }
+
+  // react-hookform
   const {
     handleSubmit,
     register,
@@ -219,6 +256,10 @@ export const ToolstringProvider = ({ children }) => {
         swap,
         move,
         insert,
+        filterByTagHandler,
+        isTag,
+        filterTagList,
+        exportToCSV,
       }}
     >
       {children}

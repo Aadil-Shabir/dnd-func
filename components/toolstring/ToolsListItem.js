@@ -31,7 +31,6 @@ export default function ToolsList({ item, index }) {
   }))
 
   const opacity = isDragging ? 0.4 : 1
-  // const border = isDragging ? "2px solid black" : "none"
   const { openToolForm } = useContext(ToolstringContext)
   const handleDeleteTool = async (_id) => {
     try {

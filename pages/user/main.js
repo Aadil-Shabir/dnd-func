@@ -90,9 +90,9 @@ export default function main() {
     searchTools,
     setSearchTools,
     filteredTools,
-    filterByTag,
-    setFilterByTag,
-  } = useContext(ToolstringContext);
+    exportToCSV,
+    filterByTagHandler,
+  } = useContext(ToolstringContext)
 
   // if (!currentUser) {
   //   return <Redirect to='/login' />;
@@ -206,11 +206,7 @@ export default function main() {
                             colorScheme="blue"
                             size="sm"
                             icon={<FaFileCsv />}
-                            onClick={() =>
-                              alert(
-                                "export to CSV the filtered tools list. Either full list or filtered"
-                              )
-                            }
+                            onClick={() => exportToCSV()}
                           />
                           <IconButton
                             variant="outline"
@@ -310,7 +306,7 @@ export default function main() {
                             <MenuList>
                               <MenuItem
                                 type="radio"
-                                onClick={() => alert("filter by green tag")}
+                                onClick={() => filterByTagHandler("green")}
                               >
                                 <Box w="30px" h="15px" bg="green.500" mr={3} />
                                 <span>Green tag</span>
@@ -318,21 +314,21 @@ export default function main() {
 
                               <MenuItem
                                 type="radio"
-                                onClick={() => alert("filter by yellow tag")}
+                                onClick={() => filterByTagHandler("yellow")}
                               >
                                 <Box w="30px" h="15px" bg="yellow.300" mr={3} />
                                 <span>Yellow tag</span>
                               </MenuItem>
                               <MenuItem
                                 type="radio"
-                                onClick={() => alert("filter by red tag")}
+                                onClick={() => filterByTagHandler("red")}
                               >
                                 <Box w="30px" h="15px" bg="red.500" mr={3} />
                                 <span>Red tag</span>
                               </MenuItem>
                               <MenuItem
                                 type="radio"
-                                onClick={() => alert("filter by no tag")}
+                                onClick={() => filterByTagHandler("")}
                               >
                                 <Box
                                   w="30px"

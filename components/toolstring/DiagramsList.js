@@ -77,7 +77,7 @@ export default function ToolsList() {
           p={1}
           onDoubleClick={(e) => {
             remove()
-            setValue("name", filteredToolstrings[index].name)
+            // setValue("name", filteredToolstrings[index].name)
             append(filteredToolstrings[index].tools)
           }}
           my={1}
@@ -100,7 +100,11 @@ export default function ToolsList() {
                     <MenuItem
                       icon={<EditIcon />}
                       onClick={() =>
-                        alert("opens toolstring diagram to view or edit")
+                       {
+                         remove()
+                         // setValue("name", filteredToolstrings[index].name)
+                         append(filteredToolstrings[index].tools)
+                       }
                       }
                     >
                       Edit
