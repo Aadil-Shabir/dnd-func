@@ -1,7 +1,8 @@
 import { createContext, useState, useEffect, useMemo, useContext, useCallback } from 'react';
 import { toolsData } from '../data/toolsData';
 import { auth, db, storage } from '../firebase';
-import { AuthContext } from '../context/AuthContext';
+// import { collection } from "firebase/firestore"
+import { AuthContext } from "../context/AuthContext"
 import {
   collection,
   onSnapshot,
@@ -14,8 +15,8 @@ import {
   getDoc,
   deleteDoc,
   updateDoc,
-} from 'firebase/firestore';
-import { defaultTools } from '../data/defaultTools';
+} from "firebase/firestore"
+import { defaultTools } from "../data/defaultTools"
 import { useForm, useFieldArray } from "react-hook-form"
 import { ExportToCsv } from "export-to-csv"
 
@@ -49,6 +50,10 @@ export const ToolstringProvider = ({ children }) => {
   const [grid, setGrid] = useState(null)
   const [lengthUnits, setLengthUnits] = useState("ft")
   const [diameterUnits, setDiameterUnits] = useState("in")
+  const [totalWeight, setTotalWeight] = useState(0)
+  const [totalLength, setTotalLength] = useState(0)
+  const [maxOd, setMaxOd] = useState(0)
+  const [name, setName] = useState(null)
   const [weightUnits, setWeightUnits] = useState("lbs")
   const [columns, setColumns] = useState([
     "Image",
@@ -178,7 +183,58 @@ export const ToolstringProvider = ({ children }) => {
     csvExporter.generateCsv(isTag ? filterTagList : tools)
   }
 
-  // react-hookform
+  //Save the Diagram
+  const docId = `${name}@${currentUser?.uid}`
+  const docRef = doc(db, "toolstrings", docId)
+
+  const handleSaveToolstring = async (data) => {
+    const docSnap = await getDoc(docRef)
+    const toolstringData = {
+      _id: docId,
+      ...data,
+      uid: currentUser?.uid,
+      email: currentUser?.email,
+      lastModified: Date.now(),
+      totalWeight,
+      maxOd,
+      totalLength,
+      isFrequent: false,
+      grid,
+      units: {
+        length: lengthUnits,
+        diameter: diameterUnits,
+        weight: weightUnits,
+      },
+    }
+    try {
+      if (!docSnap.exists()) {
+        await setDoc(doc(db, "toolstrings", docId), toolstringData)
+        toast({
+          title: "Saved",
+          position: "top-right",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      if (docSnap.exists()) {
+        await updateDoc(doc(db, "toolstrings", docId), toolstringData)
+        toast({
+          title: "Updated",
+          position: "top-right",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+
+      console.log("saved", toolstringData)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // react-hook-form
   const {
     handleSubmit,
     register,
@@ -260,6 +316,12 @@ export const ToolstringProvider = ({ children }) => {
         isTag,
         filterTagList,
         exportToCSV,
+        handleSaveToolstring,
+        totalLength,
+        maxOd,
+        totalWeight,
+        name,
+        setName,
       }}
     >
       {children}

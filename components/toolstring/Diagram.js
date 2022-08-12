@@ -1,12 +1,4 @@
-import { useContext, forwardRef, useEffect, useState, useCallback } from 'react';
-import { db, storage } from '../../firebase';
-import { doc, setDoc, getDoc, updateDoc, collection } from 'firebase/firestore';
-import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  deleteObject,
-} from 'firebase/storage';
+import { useContext, forwardRef, useEffect, useState, useCallback } from "react"
 import {
   Flex,
   Text,
@@ -16,30 +8,17 @@ import {
   Grid,
   GridItem,
   Box,
-  Textarea,
   Button,
-  useToast,
   Image,
-} from '@chakra-ui/react';
-import { ToolstringContext } from '../../context/ToolstringContext';
-import { AuthContext } from '../../context/AuthContext';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { nanoid } from 'nanoid';
-import omitBy from 'lodash/omitBy'
-import {
-  useForm,
-  useFieldArray,
-  useFormState,
-  FormProvider,
-  getFieldState,
-} from "react-hook-form"
+} from "@chakra-ui/react"
+import { ToolstringContext } from "../../context/ToolstringContext"
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import { nanoid } from "nanoid"
 import {
   SmallAddIcon,
   SmallCloseIcon,
   DeleteIcon,
   CopyIcon,
-  EditIcon,
-  ChevronDownIcon,
 } from "@chakra-ui/icons"
 import { useDrop } from "react-dnd"
 import { Reorder } from "framer-motion"
@@ -51,18 +30,11 @@ const Diagram = forwardRef((props, ref) => {
     weightUnits,
     columns,
     setColumns,
-    showDiagram,
     setShowDiagram,
-    defaultImage,
-    setDefaultImage,
-    selectedImage,
-    setSelectedImage,
     grid,
     handleSubmit,
     register,
-    control,
     watch,
-    setValue,
     getValues,
     fields,
     append,
@@ -70,27 +42,14 @@ const Diagram = forwardRef((props, ref) => {
     swap,
     move,
     insert,
+    handleSaveToolstring,
+    maxOd,
+    totalLength,
+    totalWeight,
+    setName,
   } = useContext(ToolstringContext)
   const [isBrowser, setIsBrowser] = useState(false)
   const [showIcons, setShowIcons] = useState(null)
-  const [totalWeight, setTotalWeight] = useState(0)
-  const [totalLength, setTotalLength] = useState(0)
-  const [maxOd, setMaxOd] = useState(0)
-  const [name, setName] = useState(null)
-  const { currentUser } = useContext(AuthContext)
-  const toast = useToast()
-
-  // const { handleSubmit, register, control, watch, setValue, getValues } =
-  //   useForm({
-  //     defaultValues: {
-  //       tools: [],
-  //     },
-  //   })
-
-  // const { fields, append, remove, swap, move, insert } = useFieldArray({
-  //   control,
-  //   name: `tools`,
-  // })
 
   // Dnd
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
@@ -142,56 +101,6 @@ const Diagram = forwardRef((props, ref) => {
       subscription.unsubscribe()
     }
   }, [watch])
-
-  const docId = `${name}@${currentUser?.uid}`
-  const docRef = doc(db, "toolstrings", docId)
-
-  const handleSaveToolstring = async (data) => {
-    const docSnap = await getDoc(docRef)
-    const toolstringData = {
-      _id: docId,
-      ...data,
-      uid: currentUser?.uid,
-      email: currentUser?.email,
-      lastModified: Date.now(),
-      totalWeight,
-      maxOd,
-      totalLength,
-      isFrequent: false,
-      grid,
-      units: {
-        length: lengthUnits,
-        diameter: diameterUnits,
-        weight: weightUnits,
-      },
-    }
-    try {
-      if (!docSnap.exists()) {
-        await setDoc(doc(db, "toolstrings", docId), toolstringData)
-        toast({
-          title: "Saved",
-          position: "top-right",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        })
-      }
-      if (docSnap.exists()) {
-        await updateDoc(doc(db, "toolstrings", docId), toolstringData)
-        toast({
-          title: "Updated",
-          position: "top-right",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        })
-      }
-
-      console.log("saved", toolstringData)
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const [numIncr, setNumIncr] = useState(0)
 
@@ -587,4 +496,4 @@ const Diagram = forwardRef((props, ref) => {
   )
 })
 
-export default Diagram;
+export default Diagram

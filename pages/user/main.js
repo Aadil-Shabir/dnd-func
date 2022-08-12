@@ -75,16 +75,13 @@ const Redirect = ({ to }) => {
 export default function main() {
   const { currentUser, handleLogout } = useContext(AuthContext);
 
-  const { colorMode, toggleColorMode } = useColorMode();
-  const toast = useToast();
+  const { colorMode, toggleColorMode } = useColorMode()
   const {
     showDiagram,
     setShowDiagram,
     searchToolstrings,
     setSearchToolstrings,
-    addTool,
     setAddTool,
-    showSettings,
     setShowSettings,
     filteredToolstrings,
     searchTools,
@@ -92,6 +89,8 @@ export default function main() {
     filteredTools,
     exportToCSV,
     filterByTagHandler,
+    handleSaveToolstring,
+    handleSubmit,
   } = useContext(ToolstringContext)
 
   // if (!currentUser) {
@@ -193,11 +192,7 @@ export default function main() {
                             colorScheme="blue"
                             size="sm"
                             w="70px"
-                            onClick={() =>
-                              alert(
-                                "save toolstring diagram to Firebase. if !doc.exists() setDoc() else updateDoc()"
-                              )
-                            }
+                            onClick={handleSubmit(handleSaveToolstring)}
                           >
                             Save
                           </Button>
