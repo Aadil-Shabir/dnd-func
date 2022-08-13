@@ -108,6 +108,8 @@ const Diagram = forwardRef((props, ref) => {
     setNumIncr(Math.floor(Math.random() * 10))
   }, [fields])
 
+  console.log("Fields", fields)
+
   return (
     <form onSubmit={handleSubmit(handleSaveToolstring)} autoComplete="off">
       <Button size="xs" type="submit">
@@ -260,6 +262,11 @@ const Diagram = forwardRef((props, ref) => {
                                 <Image
                                   boxSize="81px"
                                   src={getValues(`tools.${index}.imageURL`)}
+                                  width={
+                                    getValues(`tools.${index}.width`)
+                                      ? getValues(`tools.${index}.width`) + "px"
+                                      : "80px"
+                                  }
                                 />
                                 {/* <Input
                       fontSize='xs'

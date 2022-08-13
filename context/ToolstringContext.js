@@ -141,6 +141,8 @@ export const ToolstringProvider = ({ children }) => {
     }
   }
 
+  console.log("Tools", tools)
+
   useEffect(() => {
     getTools()
   }, [currentUser])
@@ -242,6 +244,7 @@ export const ToolstringProvider = ({ children }) => {
     watch,
     setValue,
     getValues,
+    reset,
     formState: { dirtyFields },
   } = useForm({
     defaultValues: {
@@ -249,7 +252,7 @@ export const ToolstringProvider = ({ children }) => {
     },
   })
 
-  const { fields, append, remove, swap, move, insert } = useFieldArray({
+  const { fields, append, remove, swap, move, insert, update } = useFieldArray({
     control,
     name: `tools`,
   })
@@ -322,6 +325,8 @@ export const ToolstringProvider = ({ children }) => {
         totalWeight,
         name,
         setName,
+        reset,
+        update
       }}
     >
       {children}
