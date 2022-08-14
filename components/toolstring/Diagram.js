@@ -55,6 +55,7 @@ const Diagram = forwardRef((props, ref) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: "tool",
     drop: (item) => {
+      console.log(item)
       append(item)
     },
     collect: (monitor) => ({
@@ -267,6 +268,8 @@ const Diagram = forwardRef((props, ref) => {
                                       ? getValues(`tools.${index}.width`) + "px"
                                       : "80px"
                                   }
+                                  height={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
+                                  position={getValues(`tools.${index}.position`) ? getValues(`tools.${index}.position`) : "static"}
                                 />
                                 {/* <Input
                       fontSize='xs'

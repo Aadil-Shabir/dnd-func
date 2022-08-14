@@ -326,7 +326,8 @@ export const ToolstringProvider = ({ children }) => {
         name,
         setName,
         reset,
-        update
+        update,
+        watch
       }}
     >
       {children}

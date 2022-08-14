@@ -91,7 +91,10 @@ export default function AddTool() {
     setValue: setVal,
     getValues: getVal,
     reset: res,
-    update
+    update,
+    fields,
+    tools,
+    watch
   } = useContext(ToolstringContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [scrollBehavior, setScrollBehavior] = useState("inside")
@@ -299,7 +302,6 @@ export default function AddTool() {
         })
       }
       if (docSnap.exists()) {
-        const data = docSnap.data()
         await updateDoc(doc(db, "tools", docId), toolData)
         toast({
           title: "Updated",
@@ -308,15 +310,13 @@ export default function AddTool() {
           duration: 3000,
           isClosable: true,
         })
-        // setVal("tools.0.width", data.width)
       }
     } catch (error) {
       console.log(error)
     }
   }
-  const [wi, setWi] = useState(null);
   useEffect(() => {
-    ;(async () => {
+    const fetchData = async () => {
       // reset the form and state.
       reset()
       setEditMode(false)
@@ -345,22 +345,45 @@ export default function AddTool() {
           setValue("units.weight", data.units.weight)
           setValue("units.fishneck", data.units.fishneck)
           setValue("imageURL", data.imageURL)
-          // setVal("")
-          setWi(data.width)
           setEditMode(true)
-          console.log(data.width, "DATA WiDTH")
+          // const fieldsArray = fields.filter((field, index) => field._id === data._id)
+          // fieldsArray.map((item, index) => {
+          //   setVal(`tools.${index}.width`, data.width)
+          // })
           // setAttachments(data.attachments)
           // setImage()
+          const myField = fields.map((field, index) => {
+            if (field._id === data._id) {
+              return index
+            }
+          })
+          const myIndexField = myField.filter((item, index) => item !== undefined)
+          myIndexField.map((item, index) => {
+            setVal(`tools.${item}.width`, data.width)
+            setVal(`tools.${item}.height`, data.height)
+            setVal(`tools.${item}.position`, data.position)
+          })
         } else {
           // show error and close the modal.
           alert("Invalid id given")
           setAddTool(false)
         }
       }
-    })()
-  }, [addTool, wi, setWi])
+    }
+    fetchData()
+  }, [ addTool, tools, fields])
 
-  console.log("WIII", wi)
+  const watchAllFields = watch(); // when pass nothing as argument, you are watching everything
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => console.log(value, "JagJeet"));
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const onSubmitHandler = () => {
+    // setVal("tools.0.width", myData.width);
+    // console.log("My Data", myData)
+  }
+
   return (
     <>
       {/* select default image drawer start */}
@@ -374,7 +397,7 @@ export default function AddTool() {
         <DrawerOverlay />
         <DrawerContent zIndex={9999}>
           <DrawerCloseButton size="sm" onClick={() => setDefaultImage(false)} />
-          <DrawerHeader>Select Image KLO</DrawerHeader>
+          <DrawerHeader>Select Image</DrawerHeader>
           <Flex w="full" p={5}>
             <InputGroup w="280px" size="sm">
               <InputLeftElement
@@ -909,7 +932,7 @@ export default function AddTool() {
                     Clear
                   </Button>
                 )}
-                <Button colorScheme="blue" size="sm" w="70px" type="submit">
+                <Button colorScheme="blue" size="sm" w="70px" type="submit" onClick={onSubmitHandler}>
                   {editMode ? "Update" : "Save"}
                 </Button>
               </Flex>
