@@ -346,10 +346,6 @@ export default function AddTool() {
           setValue("units.fishneck", data.units.fishneck)
           setValue("imageURL", data.imageURL)
           setEditMode(true)
-          // const fieldsArray = fields.filter((field, index) => field._id === data._id)
-          // fieldsArray.map((item, index) => {
-          //   setVal(`tools.${index}.width`, data.width)
-          // })
           // setAttachments(data.attachments)
           // setImage()
           const myField = fields.map((field, index) => {
@@ -372,12 +368,6 @@ export default function AddTool() {
     }
     fetchData()
   }, [ addTool, tools, fields])
-
-  const watchAllFields = watch(); // when pass nothing as argument, you are watching everything
-  useEffect(() => {
-    const subscription = watch((value, { name, type }) => console.log(value, "JagJeet"));
-    return () => subscription.unsubscribe();
-  }, [watch]);
 
   const onSubmitHandler = () => {
     // setVal("tools.0.width", myData.width);

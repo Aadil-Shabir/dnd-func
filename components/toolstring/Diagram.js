@@ -249,10 +249,15 @@ const Diagram = forwardRef((props, ref) => {
                             templateColumns={`repeat(${columns?.length}, 1fr)`}
                             gap={0}
                             w="full"
+                            h="full"
                           >
                             <GridItem
-                              w="100%"
-                              h="80px"
+                              w={
+                                getValues(`tools.${index}.width`)
+                                  ? getValues(`tools.${index}.width`) + "px"
+                                  : "80px"
+                              }
+                              h={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
                               justify="center"
                               align="center"
                               borderRightWidth={
@@ -269,6 +274,7 @@ const Diagram = forwardRef((props, ref) => {
                                       : "80px"
                                   }
                                   height={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
+                                  // height="100px"
                                   position={getValues(`tools.${index}.position`) ? getValues(`tools.${index}.position`) : "static"}
                                 />
                                 {/* <Input
@@ -283,7 +289,7 @@ const Diagram = forwardRef((props, ref) => {
                             </GridItem>
                             <GridItem
                               w="100%"
-                              h="80px"
+                              h={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
                               justify="center"
                               align="center"
                               borderRightWidth={
@@ -306,7 +312,7 @@ const Diagram = forwardRef((props, ref) => {
                             </GridItem>
                             <GridItem
                               w="100%"
-                              h="80px"
+                              h={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
                               justify="center"
                               align="center"
                               borderRightWidth={
@@ -330,7 +336,7 @@ const Diagram = forwardRef((props, ref) => {
                             </GridItem>
                             <GridItem
                               w="100%"
-                              h="80px"
+                              h={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
                               justify="center"
                               align="center"
                               borderRightWidth={
@@ -354,7 +360,7 @@ const Diagram = forwardRef((props, ref) => {
                             </GridItem>
                             <GridItem
                               w="100%"
-                              h="80px"
+                              h={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
                               justify="center"
                               align="center"
                               borderRightWidth={
@@ -381,7 +387,7 @@ const Diagram = forwardRef((props, ref) => {
                             </GridItem>
                             <GridItem
                               w="100%"
-                              h="80px"
+                              h={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
                               justify="center"
                               align="center"
                               borderRightWidth={
@@ -408,7 +414,7 @@ const Diagram = forwardRef((props, ref) => {
                             </GridItem>
                             <GridItem
                               w="100%"
-                              h="80px"
+                              h={getValues(`tools.${index}.height`) ? getValues(`tools.${index}.height`) + "px" : "80px"}
                               justify="center"
                               align="center"
                               _hover={{
