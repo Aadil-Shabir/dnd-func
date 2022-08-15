@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from "react";
 import {
   Tabs,
   TabList,
@@ -27,7 +27,7 @@ import {
   useToast,
   Tag,
   TagLabel,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   AddIcon,
   MoonIcon,
@@ -35,31 +35,30 @@ import {
   SearchIcon,
   SmallCloseIcon,
   SmallAddIcon,
-} from '@chakra-ui/icons';
-import Diagram from '../../components/toolstring/Diagram';
-import Diagram2 from '../../components/toolstring/Diagram2';
-import { BsPrinterFill } from 'react-icons/bs';
-import { FaFileCsv, FaCog } from 'react-icons/fa';
-import { AuthContext } from '../../context/AuthContext';
-import { ToolstringContext } from '../../context/ToolstringContext';
-import { useRouter } from 'next/router';
-import ToolsList from '../../components/toolstring/ToolsList';
-import DiagramsList from '../../components/toolstring/DiagramsList';
-import AddTool from '../../components/toolstring/AddTool';
-import Settings from '../../components/toolstring/Settings';
-import { TbAdjustmentsHorizontal } from 'react-icons/tb';
-import { BsQuestionCircleFill } from 'react-icons/bs';
-import { Offline, Online, Detector } from 'react-detect-offline';
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+} from "@chakra-ui/icons";
+import Diagram from "../../components/toolstring/Diagram";
+import Diagram2 from "../../components/toolstring/Diagram2";
+import { BsPrinterFill } from "react-icons/bs";
+import { FaFileCsv, FaCog } from "react-icons/fa";
+import { AuthContext } from "../../context/AuthContext";
+import { ToolstringContext } from "../../context/ToolstringContext";
+import { useRouter } from "next/router";
+import ToolsList from "../../components/toolstring/ToolsList";
+import DiagramsList from "../../components/toolstring/DiagramsList";
+import AddTool from "../../components/toolstring/AddTool";
+import Settings from "../../components/toolstring/Settings";
+import { TbAdjustmentsHorizontal } from "react-icons/tb";
+import { BsQuestionCircleFill } from "react-icons/bs";
+import { Offline, Online, Detector } from "react-detect-offline";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import ReactToPrint from "react-to-print";
 
-
-
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 
 const tabList = [
   {
-    name: 'Toolstring',
+    name: "Toolstring",
   },
 ];
 
@@ -74,8 +73,8 @@ const Redirect = ({ to }) => {
 
 export default function main() {
   const { currentUser, handleLogout } = useContext(AuthContext);
-
-  const { colorMode, toggleColorMode } = useColorMode()
+  const componentRef = useRef();
+  const { colorMode, toggleColorMode } = useColorMode();
   const {
     showDiagram,
     setShowDiagram,
@@ -91,7 +90,7 @@ export default function main() {
     filterByTagHandler,
     handleSaveToolstring,
     handleSubmit,
-  } = useContext(ToolstringContext)
+  } = useContext(ToolstringContext);
 
   // if (!currentUser) {
   //   return <Redirect to='/login' />;
@@ -203,14 +202,16 @@ export default function main() {
                             icon={<FaFileCsv />}
                             onClick={() => exportToCSV()}
                           />
-                          <IconButton
-                            variant="outline"
-                            colorScheme="blue"
-                            size="sm"
-                            icon={<BsPrinterFill />}
-                            onClick={() =>
-                              alert("react to print the toolstring diagram")
-                            }
+                          <ReactToPrint
+                            trigger={() => (
+                              <IconButton
+                                variant="outline"
+                                colorScheme="blue"
+                                size="sm"
+                                icon={<BsPrinterFill />}
+                              />
+                            )}
+                            content={() => componentRef.current}
                           />
                           <IconButton
                             variant="outline"
@@ -379,7 +380,11 @@ export default function main() {
 
                     <Flex w="654px" h="100vh" px={2}>
                       <div className="overflow-y-auto scrollbar-hide">
-                        {showDiagram && <Diagram />}
+                        {showDiagram && (
+                          <div>
+                            <Diagram ref={componentRef} />
+                          </div>
+                        )}
                         {/* {showDiagram && <Diagram2 />} */}
                       </div>
                     </Flex>
@@ -443,5 +448,5 @@ export default function main() {
         </Tabs>
       </div>
     </DndProvider>
-  )
+  );
 }
